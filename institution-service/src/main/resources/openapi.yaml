@@ -1,0 +1,106 @@
+openapi: "3.0.1"
+info:
+  title: InstitutionAPI
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+  - name: institution
+    description: APIs to manage Institution
+paths:
+  /api/v1/institution:
+    get:
+      tags:
+        - institution
+      summary: Fetch all Institutions
+      description: Fetch all Istitutions
+      operationId: getInstitutions
+      x-vertx-event-bus: institution-api
+      responses:
+        '200':
+          description: Successful Operaiton
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Institution'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+    post:
+      tags:
+        - institution
+      summary: Create new Institution
+      description: Create new Institution
+      operationId: createInstitution
+      x-vertx-event-bus: institution-api
+      requestBody:
+        description: Create a new Institution
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateInstitutionRequest'
+      responses:
+        '200':
+          description: Successful Operaiton
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Institution'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+  /api/v1/institution/{id}:
+    get:
+      tags:
+        - institution
+      summary: Fetch all Institutions
+      description: Fetch all Istitutions
+      operationId: getInstitutionById
+      x-vertx-event-bus: institution-api
+      parameters:
+        - name: id
+          in: path
+          description: ID of the institution
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful Operaiton
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Institution'
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Institution:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Institution ID
+          example: 1
+        name:
+          type: string
+          description: Institution name
+          example: Institution1
+    CreateInstitutionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Institution name
+          example: Institution1

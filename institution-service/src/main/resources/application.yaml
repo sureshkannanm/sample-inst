@@ -1,0 +1,14 @@
+hibernate:
+  connection:
+    url: jdbc:postgresql://localhost:5432/postgres?loggerLevel=OFF
+    username: postgres
+    password: postgres
+    pool_size: 10
+  show_sql: true
+  format_sql: true
+  highlight_sql: true
+  hbm2ddl:
+    auto: update
+
+server:
+  port: 8081

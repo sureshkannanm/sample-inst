@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.5'
+}
+
+group = 'com.aciworldwide.web'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/gen/java'
+            srcDir 'src/main/java'
+        }
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.1.5' exclude(group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat')
+    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'io.vertx:vertx-web-api-service:4.4.6'
+    implementation 'io.vertx:vertx-web-openapi:4.4.6'
+    implementation 'io.vertx:vertx-pg-client:4.4.6'
+    compileOnly 'io.vertx:vertx-codegen:4.4.6'
+    compileOnly 'io.vertx:vertx-service-proxy:4.4.6'
+    implementation 'io.vertx:vertx-web:4.4.6'
+    implementation 'com.ongres.scram:client:2.1'
+    implementation 'io.smallrye.reactive:smallrye-mutiny-vertx-runtime:3.7.2'
+    implementation 'org.hibernate.reactive:hibernate-reactive-core:2.0.6.Final'
+    implementation 'org.jetbrains:annotations:24.0.0'
+
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'io.vertx:vertx-codegen:4.4.6:processor'
+    annotationProcessor 'io.vertx:vertx-service-proxy:4.4.6'
+
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+task generateProxies(type: JavaCompile) {
+    group 'build'
+    description 'Generates the Vert.x proxies'
+    source = sourceSets.main.java
+    classpath = configurations.compileClasspath + configurations.annotationProcessor + configurations.runtimeClasspath
+    options.annotationProcessorPath = configurations.compileClasspath
+    options.debugOptions.debugLevel = "source,lines,vars"
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "io.vertx.codegen.CodeGenProcessor",
+            "-Acodegen.output=${projectDir}/src/main",
+    ]
+    destinationDir project.file("${projectDir}/src/gen/java")
+}
+
+compileJava{
+    dependsOn generateProxies
+}
+
+test {
+    useJUnitPlatform()
+}
